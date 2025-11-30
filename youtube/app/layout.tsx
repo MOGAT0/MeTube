@@ -15,6 +15,9 @@ const inter = Inter({subsets: ["latin"]})
 export const metadata: Metadata = {
   title: "MeTube",
   description: "Minions Hub",
+  icons:{
+    icon:"/metube-icon.svg"
+  }
 };
 
 export default function RootLayout({
