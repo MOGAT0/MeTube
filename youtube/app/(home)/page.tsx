@@ -9,7 +9,6 @@ export default async function Home() {
 
   return (
     <div>
-      {/* <Image src={"/icon.svg"} width={50} height={50} alt="Logo"/> */}
       <HydrateClient>
         <Suspense fallback = {<p>loading...</p>}>
         <ErrorBoundary fallback = {<p>Error...</p>}>

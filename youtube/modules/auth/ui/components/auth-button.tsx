@@ -1,12 +1,16 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { UserCircleIcon } from "lucide-react";
-import { UserButton, SignInButton, SignedIn, SignedOut } from "@clerk/nextjs";
+import { UserCircleIcon, View } from "lucide-react";
+import { UserButton, SignInButton, SignedIn, SignedOut, useUser } from "@clerk/nextjs";
+
 const AuthButton = () => {
+    const { user, isLoaded } = useUser();
+
     return (
         <>
             <SignedIn>
+                <h1>Hello, {user?.fullName}</h1>
                 <UserButton />
             </SignedIn>
             <SignedOut>
