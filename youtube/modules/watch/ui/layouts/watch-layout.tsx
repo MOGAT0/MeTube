@@ -7,7 +7,7 @@ interface WatchLayoutProps {
  
 export const WatchLayout = ({children}: WatchLayoutProps)=> {
     return (
-        <SidebarProvider open={false}>
+        <SidebarProvider defaultOpen={false}>
             <div className="w-full">
                 <HomeNavbar />
                 <div className="flex min-h-screen pt-16">

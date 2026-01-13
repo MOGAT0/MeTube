@@ -3,11 +3,16 @@ const { exec } = require('child_process');
 const cors = require('cors');
 const fs = require('fs');
 const path = require('path');
+const Groq = require("groq-sdk");
+const dotenv = require("dotenv");
+
+dotenv.config();
 
 const app = express();
 const PORT = 9000;
 
 app.use(cors());
+app.use(express.json({ limit: '50mb' }));
 
 // Helper to format time from "00:00:05.123" to "00:05" or "01:23:45"
 function formatTimestamp(rawTime) {
@@ -138,7 +143,6 @@ app.get('/transcript', (req, res) => {
                 if (unlinkErr) console.error(`Error deleting temp file: ${unlinkErr}`);
             });
 
-            // Parse with timestamps
             const formattedTranscript = parseVttWithTimestamps(data);
 
             res.json({
@@ -162,7 +166,7 @@ app.get('/metadata', (req, res) => {
     exec(command, (error, stdout, stderr) => {
         if (error) {
             console.error(`Exec error: ${error}`);
-            return res.status(500).json({ error: 'Failed to fetch metadata.' });
+            return res.status(500).json({ ok:false,error: 'Failed to fetch metadata.' });
         }
 
         const output = stdout.trim().split('\n');
@@ -175,6 +179,54 @@ app.get('/metadata', (req, res) => {
             description: description
         });
     });
+});
+
+
+const groq = new Groq({
+    apiKey: process.env.AI_API_KEY
+});
+
+const SYSTEM_PROMPT = `You are a Professional Briefing Assistant. 
+Your task is to Analyze the provided Data and extract high-signal information, 
+make a note from it highlighing the important. Ignore intros, sponsors, and filler. 
+do not use too many unnecessary symbols such as making a table, just plain text like documents.`;
+
+app.post('/v1/analyzer', async (req, res) => {
+    try {
+        let transcriptData = req.body.data;
+        if (!transcriptData) {
+            return res.status(400).json({ error: 'Missing "data" in request body' });
+        }
+
+        if (Array.isArray(transcriptData)) {
+            transcriptData = transcriptData.join('\n');
+        }
+
+        console.log("Analyzing content length:", transcriptData.length, "characters");
+
+        const chatCompletion = await groq.chat.completions.create({
+            messages: [
+                { role: "system", content: SYSTEM_PROMPT },
+                { role: "user", content: transcriptData }
+            ],
+            model: process.env.AI_MODEL, 
+            temperature: 0.7,
+            max_completion_tokens: 8192, 
+            stream: false
+        });
+
+        const analysis = chatCompletion.choices[0]?.message?.content || "No analysis generated.";
+
+        res.json({
+            ok:true,
+            success: true,
+            analysis: analysis
+        });
+
+    } catch (error) {
+        console.error('API Error:', error);
+        res.status(500).json({ success: false, error: error.message });
+    }
 });
 
 app.listen(PORT, () => {

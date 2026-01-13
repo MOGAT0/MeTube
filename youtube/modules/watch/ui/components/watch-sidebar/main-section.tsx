@@ -10,18 +10,19 @@ const items = [
         title: "Home",
         url: "/",
         icon: HomeIcon,
+        auth: false
     },
-    {
-        title: "Subscriptions",
-        url: "/feed/subscriptions",
-        icon: PlaySquareIcon,
-        auth: true,
-    },
-    {
-        title: "Trending",
-        url: "/feed/trending",
-        icon: FlameIcon,
-    },
+    // {
+    //     title: "Subscriptions",
+    //     url: "/feed/subscriptions",
+    //     icon: PlaySquareIcon,
+    //     auth: true,
+    // },
+    // {
+    //     title: "Trending",
+    //     url: "/feed/trending",
+    //     icon: FlameIcon,
+    // },
 ]
 
 export const MainSection = ()=> {

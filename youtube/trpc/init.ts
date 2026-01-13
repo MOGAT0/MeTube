@@ -6,6 +6,7 @@ import { eq } from "drizzle-orm";
 import superjson from 'superjson';
 import { auth } from '@clerk/nextjs/server';
 
+
 export const createTRPCContext = cache(async () => {
   /**
    * @see: https://trpc.io/docs/server/context
@@ -55,5 +56,4 @@ export const protectedProcedure = t.procedure.use(async function isAuthed(opts){
     }
   })
 });
-
 
